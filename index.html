@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dauphin Kings Transaction Tracker · 2026-27 MJHL</title>
+<title>Dauphin Kings Transaction Tracker · 2026-27</title>
 <style>
   :root {
     --bg: #f6f5f1; --card: #ffffff; --ink: #1c1d22; --muted: #6b6e78; --line: #e4e2dc;
@@ -46,26 +46,18 @@
   th { text-align:left; color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; padding:8px; border-bottom:1px solid var(--line); white-space:nowrap; }
   td { padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
   td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
-  tr.focus td { background:var(--kings-soft); font-weight:600; }
-  tr.click { cursor:pointer; } tr.click:hover td { background:var(--kings-soft); }
   .out { color:var(--low); } .in { color:var(--high); } .muted { color:var(--muted); }
   .tag { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:99px; margin-left:6px; vertical-align:1px; }
+  .chip { display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; white-space:nowrap; }
+  .chip.current { background:#e3f4ea; color:#1f6b42; } .chip.dated { background:#f3f1ea; color:#6b6e78; }
+  .chip.partial { background:#fff1d6; color:#8a5a00; } .chip.none { background:#f7e4e2; color:#9b3027; }
   .tag.pending { background:#fff1d6; color:#8a5a00; border:1px solid #f0d08a; }
-  .bar { height:8px; border-radius:4px; background:var(--kings); opacity:.75; min-width:2px; }
-  .morale { white-space:nowrap; font-weight:600; }
-  .morale .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
-  .m-high { color:var(--high); } .m-high .dot { background:var(--high); }
-  .m-mid { color:var(--mid); } .m-mid .dot { background:var(--mid); }
-  .m-low { color:var(--low); } .m-low .dot { background:var(--low); }
-  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:13px; margin-top:12px; }
   .filters { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
   .filters button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:99px; padding:4px 12px; font:inherit; font-size:13px; cursor:pointer; }
   .filters button.on { background:var(--kings); border-color:var(--kings); color:#fff; }
-  select { font:inherit; padding:7px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); min-width:260px; }
   .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
   .tier { border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; }
   .tier b { display:block; margin-bottom:4px; }
-  .note { background:var(--kings-soft); border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:14px; }
   .about p, .about li { max-width:70ch; }
   footer { color:var(--muted); font-size:12px; text-align:center; padding:0 20px 30px; }
   a { color:inherit; }
@@ -74,12 +66,11 @@
 <body>
 <header><div class="wrap">
   <h1>👑 Dauphin Kings Transaction Tracker</h1>
-  <p>2026-27 MJHL season · <span class="status" id="status">Loading…</span></p>
+  <p>2026-27 season · <span class="status" id="status">Loading…</span></p>
   <nav id="tabs">
     <a href="#overview" data-tab="overview">Overview</a>
     <a href="#kings" data-tab="kings">Kings Trades</a>
-    <a href="#league" data-tab="league">League &amp; Morale</a>
-    <a href="#teams" data-tab="teams">Team Explorer</a>
+    <a href="#stats" data-tab="stats">Traded-Out Stats</a>
     <a href="#about" data-tab="about">About</a>
   </nav>
 </div></header>
@@ -97,10 +88,10 @@
         <p class="sub" style="margin:10px 0 0"><a href="#kings">See all Kings trades →</a></p>
       </section>
       <section>
-        <h2>Morale snapshot</h2>
-        <p class="sub">Where every MJHL team sits, by trade volume.</p>
-        <div class="tiers" id="tiers"></div>
-        <p class="sub" style="margin:10px 0 0"><a href="#league">Full league table →</a></p>
+        <h2>Top scorers since leaving</h2>
+        <p class="sub">Players the Kings traded out, by points with their new team.</p>
+        <div class="scroll"><table><tbody id="topOut"></tbody></table></div>
+        <p class="sub" style="margin:10px 0 0"><a href="#stats">All traded-out stats →</a></p>
       </section>
     </div>
   </div>
@@ -123,34 +114,28 @@
     </section>
   </div>
 
-  <!-- LEAGUE -->
-  <div class="panel" id="p-league">
+  <!-- TRADED-OUT STATS -->
+  <div class="panel" id="p-stats">
+    <div class="tiles" id="statTiles"></div>
     <section>
-      <h2>League comparison &amp; team morale</h2>
-      <p class="sub">Sorted by number of transactions. Click a team to see its trades.</p>
-      <div class="scroll"><table>
-        <thead><tr><th>Team</th><th>Morale</th><th class="num">Transactions</th><th style="width:22%"></th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead>
-        <tbody id="leagueBody"></tbody>
+      <h2>Skaters since leaving Dauphin</h2>
+      <p class="sub" id="statSub"></p>
+      <div class="scroll"><table class="sortable">
+        <thead><tr>
+          <th data-k="name">Player</th><th data-k="pos">Pos</th><th data-k="now">Now playing for</th>
+          <th class="num" data-k="gp">GP</th><th class="num" data-k="g">G</th><th class="num" data-k="a">A</th>
+          <th class="num" data-k="pts">PTS</th><th class="num" data-k="ppg">P/GP</th><th class="num" data-k="pim">PIM</th>
+          <th data-k="date">Traded</th><th data-k="status">Data</th>
+        </tr></thead>
+        <tbody id="skaterBody"></tbody>
+        <tfoot id="skaterFoot"></tfoot>
       </table></div>
-      <div class="legend">
-        <span class="morale m-high"><span class="dot"></span>High: stable roster</span>
-        <span class="morale m-mid"><span class="dot"></span>Mid: average turnover</span>
-        <span class="morale m-low"><span class="dot"></span>Low: heavy turnover</span>
-      </div>
     </section>
-  </div>
-
-  <!-- TEAM EXPLORER -->
-  <div class="panel" id="p-teams">
     <section>
-      <h2>Team Explorer</h2>
-      <p class="sub">Pick any MJHL team to see its transactions.</p>
-      <div class="filters"><select id="teamPick"></select></div>
-      <div class="tiles" id="teamTiles"></div>
-      <div id="teamNote"></div>
+      <h2>Goalies since leaving Dauphin</h2>
       <div class="scroll"><table>
-        <thead><tr><th>Date</th><th>Sends</th><th>Gets</th><th>Other team</th></tr></thead>
-        <tbody id="teamBody"></tbody>
+        <thead><tr><th>Player</th><th>Now playing for</th><th class="num">GP</th><th class="num">W-L</th><th class="num">GAA</th><th class="num">SV%</th><th class="num">SO</th><th>Traded</th><th>Data</th></tr></thead>
+        <tbody id="goalieBody"></tbody>
       </table></div>
     </section>
   </div>
@@ -159,28 +144,25 @@
   <div class="panel about" id="p-about">
     <section>
       <h2>About this tracker</h2>
-      <p>Transactions come from the <a id="srclink" href="https://www.mjhlhockey.ca/2026-27-transactions">MJHL 2026-27 transactions page</a>. A GitHub Action re-reads that page every 3 hours and updates this site's data. An open page checks for new data every 10 minutes.</p>
-      <h2 style="margin-top:18px">How morale is rated</h2>
-      <ul>
-        <li>Teams are ranked by total transactions.</li>
-        <li>The busiest third of the league gets <span class="morale m-low"><span class="dot"></span>Low</span>, the middle third <span class="morale m-mid"><span class="dot"></span>Mid</span>, and the quietest third <span class="morale m-high"><span class="dot"></span>High</span>. Tied teams share a tier.</li>
-        <li>It's a fun indicator based only on trade volume, not a real measure of the dressing room.</li>
-      </ul>
+      <p>Transactions come from the <a id="srclink" href="https://www.mjhlhockey.ca/2026-27-transactions">official 2026-27 transactions page</a>. A GitHub Action re-reads that page every 3 hours and updates this site's data. An open page checks for new data every 10 minutes.</p>
+      <h2 style="margin-top:18px">Traded-out stats</h2>
+      <p>This tab counts only games played after a player left Dauphin, with his new team. These numbers come from several different sources and aren't refreshed automatically. They're kept in <code>stats.js</code>, and each line is marked Current, May be behind, Partial or Not found. Update a line when you see new numbers, and add one after each new trade.</p>
       <h2 style="margin-top:18px">Pending trades</h2>
       <p>Trades are flagged pending by hand in <code>overrides.json</code>. Pending players right now: <span id="pendList"></span>.</p>
       <h2 style="margin-top:18px">Reading the data</h2>
-      <p>On the MJHL page, each row lists a team and the players that team sends, followed by the other team and what it sends back. "PDF" and "Future Considerations" aren't counted as players. The source page has occasional typos and duplicate rows, so totals can be off by one or two.</p>
+      <p>On the transactions page, each row lists a team and the players that team sends, followed by the other team and what it sends back. "PDF" and "Future Considerations" aren't counted as players. The source page has occasional typos and duplicate rows, so a count can occasionally be off by one.</p>
     </section>
   </div>
 </main>
 
-<footer>Data: MJHL 2026-27 transactions · updated automatically</footer>
+<footer>Dauphin Kings 2026-27 · trades updated automatically</footer>
 
+<script src="data.js"></script>
+<script src="stats.js"></script>
 <script>
 const REFRESH_MS = 10 * 60 * 1000;
-const TABS = ["overview", "kings", "league", "teams", "about"];
-const LABEL = { high: "High", mid: "Mid", low: "Low" };
-let DATA = null, filter = "all", pickedTeam = null;
+const TABS = ["overview", "kings", "stats", "about"];
+let DATA = null, filter = "all";
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -190,7 +172,6 @@ const fmtDate = (iso, raw) => iso
 const playerList = (list, raw) => list.length
   ? list.map(p => `${esc(p.name)} <span class="muted">${p.pos} '${p.born.slice(2)}</span>`).join("<br>")
   : `<span class="muted">${esc(raw)}</span>`;
-const moraleBadge = m => `<span class="morale m-${m}"><span class="dot"></span>${LABEL[m]}</span>`;
 
 /* ---------- tabs ---------- */
 function showTab() {
@@ -211,26 +192,13 @@ function teamRows(team) {
     .map(r => {
       const me = r.team_a === team ? "a" : "b", them = me === "a" ? "b" : "a";
       return {
-        date: fmtDate(r.date, r.date_raw),
+        date: fmtDate(r.date, r.date_raw), iso: r.date || "",
         send: r["players_" + me], sendRaw: r["sent_" + me],
         get: r["players_" + them], getRaw: r["sent_" + them],
-        other: r["team_" + them],
+        other: r["team_" + them].replace(/\s*\([A-Z]+\)\s*$/, ""),  // drop "(SJHL)"-style tags
         pending: [...r.players_a, ...r.players_b].some(p => pend.has(p.name)),
       };
     });
-}
-
-function ranked() {
-  return Object.entries(DATA.summary)
-    .sort((a, b) => b[1].transactions - a[1].transactions || a[0].localeCompare(b[0]));
-}
-
-function moraleMap() {
-  const t = ranked(), n = t.length, map = {};
-  const cutLow = t[Math.floor(n / 3) - 1][1].transactions;
-  const cutMid = t[Math.floor(2 * n / 3) - 1][1].transactions;
-  for (const [team, s] of t) map[team] = s.transactions >= cutLow ? "low" : s.transactions >= cutMid ? "mid" : "high";
-  return map;
 }
 
 const txRow = x => `<tr>
@@ -239,25 +207,25 @@ const txRow = x => `<tr>
   <td class="${x.get.length ? "in" : ""}">${playerList(x.get, x.getRaw)}</td>
   <td>${esc(x.other)}</td></tr>`;
 
-function tilesHTML(team, morale, R) {
-  const s = DATA.summary[team] || { transactions: 0, out: 0, in: 0 };
-  const rank = R.findIndex(([t]) => t === team) + 1;
+function tilesHTML(rows) {
+  const out = rows.reduce((n, x) => n + x.send.length, 0), inn = rows.reduce((n, x) => n + x.get.length, 0);
+  const net = inn - out;
   return [
-    ["Transactions", s.transactions],
-    ["League rank", rank ? `${rank} / ${R.length}` : "–"],
-    ["Players out", `<span class="out">${s.out}</span>`],
-    ["Players in", `<span class="in">${s.in}</span>`],
-    ["Morale", morale[team] ? moraleBadge(morale[team]) : "–"],
+    ["Transactions", rows.length],
+    ["Players out", `<span class="out">${out}</span>`],
+    ["Players in", `<span class="in">${inn}</span>`],
+    ["Net players", `<span class="${net < 0 ? "out" : net > 0 ? "in" : ""}">${net > 0 ? "+" : ""}${net}</span>`],
+    ["Pending", rows.filter(x => x.pending).length],
   ].map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
 }
 
 /* ---------- render ---------- */
 function render() {
-  const focus = DATA.focus_team, morale = moraleMap(), R = ranked();
+  const focus = DATA.focus_team;
   const kings = teamRows(focus);
 
   // Overview
-  $("tiles").innerHTML = tilesHTML(focus, morale, R);
+  $("tiles").innerHTML = tilesHTML(kings);
   $("latest").innerHTML = kings.slice(0, 5).map(x => `<tr>
     <td style="white-space:nowrap" class="muted">${x.date}</td>
     <td>${x.send.length ? `<span class="out">Out:</span> ${x.send.map(p => esc(p.name)).join(", ")}` : ""}
@@ -265,9 +233,7 @@ function render() {
         ${x.get.length ? `<span class="in">In:</span> ${x.get.map(p => esc(p.name)).join(", ")}` : ""}
         ${x.pending ? '<span class="tag pending">PENDING</span>' : ""}
         <div class="muted" style="font-size:12px">${esc(x.other)}</div></td></tr>`).join("");
-  $("tiers").innerHTML = ["low", "mid", "high"].map(m => `<div class="tier">
-    <b>${moraleBadge(m)}</b>${R.filter(([t]) => morale[t] === m)
-      .map(([t]) => t === focus ? `<strong>${esc(t)}</strong>` : esc(t)).join("<br>")}</div>`).join("");
+  renderStats(kings);
 
   // Kings trades
   const shown = kings.filter(x => filter === "all" || (filter === "pending" && x.pending) ||
@@ -275,41 +241,81 @@ function render() {
   $("kingsBody").innerHTML = shown.length ? shown.map(txRow).join("")
     : `<tr><td colspan="4" class="muted">No transactions match this filter.</td></tr>`;
 
-  // League
-  const max = Math.max(...R.map(([, s]) => s.transactions));
-  $("leagueBody").innerHTML = R.map(([t, s]) => {
-    const net = s.in - s.out;
-    return `<tr class="click ${t === focus ? "focus" : ""}" data-team="${esc(t)}">
-      <td>${esc(t)}</td><td>${moraleBadge(morale[t])}</td>
-      <td class="num">${s.transactions}</td>
-      <td><div class="bar" style="width:${(s.transactions / max * 100).toFixed(1)}%"></div></td>
-      <td class="num">${s.out}</td><td class="num">${s.in}</td>
-      <td class="num ${net < 0 ? "out" : net > 0 ? "in" : ""}">${net > 0 ? "+" : ""}${net}</td></tr>`;
-  }).join("");
-
-  // Team explorer
-  const pick = $("teamPick");
-  if (!pick.options.length) {
-    pick.innerHTML = Object.keys(DATA.summary).sort().map(t => `<option>${esc(t)}</option>`).join("");
-  }
-  pickedTeam = pickedTeam || focus;
-  pick.value = pickedTeam;
-  renderTeam(morale, R);
-
   // About + status
   $("pendList").textContent = (DATA.pending_players || []).join(", ") || "none";
   $("status").textContent = `updated ${new Date(DATA.updated).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}` +
     (DATA.mode === "seed" ? " · starter data until the first automatic refresh" : "");
 }
 
-function renderTeam(morale = moraleMap(), R = ranked()) {
-  const rows = teamRows(pickedTeam);
-  $("teamTiles").innerHTML = tilesHTML(pickedTeam, morale, R);
-  const missing = DATA.mode === "seed" && pickedTeam !== DATA.focus_team;
-  $("teamNote").innerHTML = missing
-    ? `<div class="note">Full trade lists for other teams appear after the first automatic refresh. The totals above are already current.</div>` : "";
-  $("teamBody").innerHTML = rows.length ? rows.map(txRow).join("")
-    : `<tr><td colspan="4" class="muted">${missing ? "Waiting for first refresh." : "No transactions yet."}</td></tr>`;
+let statSort = { k: "pts", dir: -1 };
+const STATUS = { current: "Current", dated: "May be behind", partial: "Partial", none: "Not found" };
+const STATUS_ORDER = { current: 0, dated: 1, partial: 2, none: 3 };
+function renderStats(kings) {
+  const S = window.KINGS_STATS;
+  if (!S) { $("statSub").textContent = "stats.js not found."; return; }
+  // Trade date and pending flag come from the transactions data.
+  const where = {};
+  for (const x of kings) for (const p of x.send) where[p.name] = { date: x.date, iso: x.iso, pending: x.pending };
+  const chip = st => `<span class="chip ${st}">${STATUS[st]}</span>`;
+  const n = x => x == null ? '<span class="muted">–</span>' : x;
+  const link = (txt, src) => src ? `<a href="${src}" target="_blank" rel="noopener">${txt}</a>` : txt;
+
+  const sk = S.skaters.map(p => {
+    const w = where[p.name] || {};
+    const has = p.gp != null;
+    const pts = has ? p.g + p.a : null;
+    return { ...p, pts, ppg: has && p.gp ? pts / p.gp : null, date: w.date || "–", iso: w.iso || "",
+             pending: w.pending, rank: STATUS_ORDER[p.status] };
+  });
+  const v = (r, k) => r[k] ?? -Infinity;
+  sk.sort((a, b) => {
+    const k = statSort.k === "date" ? "iso" : statSort.k === "status" ? "rank" : statSort.k;
+    const A = v(a, k), B = v(b, k);
+    const c = (typeof A === "string" ? A.localeCompare(B) : A - B) * statSort.dir;
+    return c || (b.pts ?? -1) - (a.pts ?? -1);
+  });
+  $("skaterBody").innerHTML = sk.map(p => `<tr>
+    <td>${esc(p.name)}${p.pending ? '<span class="tag pending">PENDING</span>' : ""}${p.note ? `<div class="muted" style="font-size:12px">${esc(p.note)}</div>` : ""}</td>
+    <td>${p.pos}</td>
+    <td>${esc(p.now)}</td>
+    <td class="num">${n(p.gp)}</td><td class="num">${n(p.g)}</td><td class="num">${n(p.a)}</td>
+    <td class="num"><b>${n(p.pts)}</b></td><td class="num">${p.ppg == null ? n(null) : p.ppg.toFixed(2)}</td><td class="num">${n(p.pim)}</td>
+    <td style="white-space:nowrap">${p.date}</td><td>${link(chip(p.status), p.src)}</td></tr>`).join("");
+
+  // Totals only count players with a full stat line (not partial / not found).
+  const counted = sk.filter(p => p.gp != null && p.status !== "partial");
+  const sum = k => counted.reduce((t, p) => t + (p[k] || 0), 0);
+  const T = { gp: sum("gp"), g: sum("g"), a: sum("a"), pim: sum("pim") };
+  $("skaterFoot").innerHTML = `<tr style="font-weight:700"><td colspan="3">Total (${counted.length} skaters with full stats)</td>
+    <td class="num">${T.gp}</td><td class="num">${T.g}</td><td class="num">${T.a}</td><td class="num">${T.g + T.a}</td><td></td><td class="num">${T.pim}</td><td colspan="2"></td></tr>`;
+  document.querySelectorAll("#p-stats th[data-k]").forEach(th => {
+    th.style.cursor = "pointer";
+    th.textContent = th.textContent.replace(/ [▲▼]$/, "") + (th.dataset.k === statSort.k ? (statSort.dir < 0 ? " ▼" : " ▲") : "");
+  });
+
+  $("goalieBody").innerHTML = S.goalies.map(g => {
+    const w = where[g.name] || {};
+    const gaa = g.gp ? g.ga / g.gp : null, svp = g.sa ? (g.sa - g.ga) / g.sa : null;
+    return `<tr><td>${esc(g.name)}${w.pending ? '<span class="tag pending">PENDING</span>' : ""}</td>
+      <td>${esc(g.now)}</td>
+      <td class="num">${g.gp}</td><td class="num">${g.w}-${g.l}</td>
+      <td class="num">${gaa == null ? "–" : gaa.toFixed(2)}</td><td class="num">${svp == null ? "–" : svp.toFixed(3).replace(/^0/, "")}</td>
+      <td class="num">${g.so}</td><td style="white-space:nowrap">${w.date || "–"}</td><td>${link(chip(g.status), g.src)}</td></tr>`;
+  }).join("");
+
+  const byPts = counted.filter(p => p.gp > 0).sort((a, b) => b.pts - a.pts);
+  const top = byPts[0];
+  $("topOut").innerHTML = byPts.slice(0, 5).map(p => `<tr><td>${esc(p.name)}<div class="muted" style="font-size:12px">${esc(p.now)}</div></td>
+    <td class="num muted" style="white-space:nowrap">${p.gp} GP</td><td class="num"><b>${p.pts}</b> pts</td></tr>`).join("");
+  const found = S.skaters.filter(p => p.status !== "none").length + S.goalies.length;
+  $("statTiles").innerHTML = [
+    ["Players traded out", S.skaters.length + S.goalies.length],
+    ["Goals since leaving", T.g],
+    ["Points since leaving", T.g + T.a],
+    ["Top scorer since leaving", top ? `<span style="font-size:18px">${esc(top.name)}</span><div class="muted" style="font-size:13px;font-weight:400">${top.pts} pts in ${top.gp} GP</div>` : "–"],
+    ["Stats found", `${found} / ${S.skaters.length + S.goalies.length}`],
+  ].map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  $("statSub").innerHTML = `Only games played <b>after</b> leaving Dauphin, as of ${S.asOf}. Click a column to sort, or a Data chip to see the source. Goal and point totals count only players with a full stat line.`;
 }
 
 /* ---------- events ---------- */
@@ -319,22 +325,29 @@ $("filters").addEventListener("click", e => {
   document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("on", x === b));
   if (DATA) render();
 });
-$("leagueBody").addEventListener("click", e => {
-  const tr = e.target.closest("tr[data-team]"); if (!tr) return;
-  pickedTeam = tr.dataset.team; $("teamPick").value = pickedTeam; renderTeam();
-  location.hash = "teams";
+document.querySelector("#p-stats thead").addEventListener("click", e => {
+  const th = e.target.closest("th[data-k]"); if (!th || !DATA) return;
+  const k = th.dataset.k;
+  statSort = { k, dir: statSort.k === k ? -statSort.dir : (["name", "pos", "now", "date", "status"].includes(k) ? 1 : -1) };
+  renderStats(teamRows(DATA.focus_team));
 });
-$("teamPick").addEventListener("change", e => { pickedTeam = e.target.value; renderTeam(); });
+
+const LOCAL = location.protocol === "file:";
 
 async function load() {
   try {
+    // On GitHub Pages: always fetch the newest data.json.
+    if (LOCAL) throw new Error("opened from disk");
     const res = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     DATA = await res.json();
-    render();
   } catch (e) {
-    $("status").textContent = "couldn't load data.json (" + e.message + ")";
+    // Opened from your computer (or fetch failed): use the copy bundled in data.js.
+    if (!window.KINGS_DATA) { $("status").textContent = "couldn't load data (" + e.message + ")"; return; }
+    DATA = window.KINGS_DATA;
   }
+  render();
+  if (LOCAL) $("status").textContent += " · offline copy, open the GitHub Pages link for live data";
 }
 
 showTab();
