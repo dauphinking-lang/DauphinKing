@@ -1,0 +1,352 @@
+{
+  "source": "https://www.mjhlhockey.ca/2026-27-transactions",
+  "mode": "seed",
+  "updated": "2026-11-26T17:45+00:00",
+  "focus_team": "Dauphin Kings",
+  "pending_players": [
+    "Brady Bell"
+  ],
+  "transactions": [
+    {
+      "date_raw": "11-25-26",
+      "date": "2026-11-25",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Brady Bell D 2008",
+      "players_a": [
+        {
+          "name": "Brady Bell",
+          "pos": "D",
+          "born": "2008"
+        }
+      ],
+      "team_b": "Estevan (SJHL)",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "11-19-26",
+      "date": "2026-11-19",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Bryson Yaschyshyn G 2006",
+      "players_a": [
+        {
+          "name": "Bryson Yaschyshyn",
+          "pos": "G",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Virden Oil Capitals",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "11-18-26",
+      "date": "2026-11-18",
+      "team_a": "Fort Frances (SIJHL)",
+      "sent_a": "Brady Shields G 2008",
+      "players_a": [
+        {
+          "name": "Brady Shields",
+          "pos": "G",
+          "born": "2008"
+        }
+      ],
+      "team_b": "Dauphin Kings",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "11-10-26",
+      "date": "2026-11-10",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Dylan Miko D 2006",
+      "players_a": [
+        {
+          "name": "Dylan Miko",
+          "pos": "D",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Warman (SJHL)",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "10-28-26",
+      "date": "2026-10-28",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Kale Pratte F 2007",
+      "players_a": [
+        {
+          "name": "Kale Pratte",
+          "pos": "F",
+          "born": "2007"
+        }
+      ],
+      "team_b": "Waywayseecappo Wolverines",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "10-20-26",
+      "date": "2026-10-20",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Kurtis Kinoshita F 2006",
+      "players_a": [
+        {
+          "name": "Kurtis Kinoshita",
+          "pos": "F",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Northern Manitoba Blizzard",
+      "sent_b": "Renat Nagneev F 2006",
+      "players_b": [
+        {
+          "name": "Renat Nagneev",
+          "pos": "F",
+          "born": "2006"
+        }
+      ]
+    },
+    {
+      "date_raw": "10-15-26",
+      "date": "2026-10-15",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Beckham Garchinski D 2007",
+      "players_a": [
+        {
+          "name": "Beckham Garchinski",
+          "pos": "D",
+          "born": "2007"
+        }
+      ],
+      "team_b": "Pembroke (CCHL)",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "10-8-26",
+      "date": "2026-10-08",
+      "team_a": "Virden Oil Capitals",
+      "sent_a": "Adam Courchesne F 2008",
+      "players_a": [
+        {
+          "name": "Adam Courchesne",
+          "pos": "F",
+          "born": "2008"
+        }
+      ],
+      "team_b": "Dauphin Kings",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "9-22-26",
+      "date": "2026-09-22",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Brody Wytinck D 2008",
+      "players_a": [
+        {
+          "name": "Brody Wytinck",
+          "pos": "D",
+          "born": "2008"
+        }
+      ],
+      "team_b": "Northern Manitoba Blizzard",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "9-22-26",
+      "date": "2026-09-22",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Wyatt Dyck F 2008 & PDF",
+      "players_a": [
+        {
+          "name": "Wyatt Dyck",
+          "pos": "F",
+          "born": "2008"
+        }
+      ],
+      "team_b": "Steinbach Pistons",
+      "sent_b": "Brody Green F 2007",
+      "players_b": [
+        {
+          "name": "Brody Green",
+          "pos": "F",
+          "born": "2007"
+        }
+      ]
+    },
+    {
+      "date_raw": "9-12-26",
+      "date": "2026-09-12",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Ethan Stewart F 2007 & PDF",
+      "players_a": [
+        {
+          "name": "Ethan Stewart",
+          "pos": "F",
+          "born": "2007"
+        }
+      ],
+      "team_b": "Niverville Nighthawks",
+      "sent_b": "Beckham Garchinski D 2007",
+      "players_b": [
+        {
+          "name": "Beckham Garchinski",
+          "pos": "D",
+          "born": "2007"
+        }
+      ]
+    },
+    {
+      "date_raw": "9-4-26",
+      "date": "2026-09-04",
+      "team_a": "Swan Valley Stampeders",
+      "sent_a": "Aidan Stewart D 2007",
+      "players_a": [
+        {
+          "name": "Aidan Stewart",
+          "pos": "D",
+          "born": "2007"
+        }
+      ],
+      "team_b": "Dauphin Kings",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "7-20-26",
+      "date": "2026-07-20",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Ash Mitchelmore F 2006",
+      "players_a": [
+        {
+          "name": "Ash Mitchelmore",
+          "pos": "F",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Valley Jr. (MHL)",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "7-18-26",
+      "date": "2026-07-18",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Gavin Haslam D 2007",
+      "players_a": [
+        {
+          "name": "Gavin Haslam",
+          "pos": "D",
+          "born": "2007"
+        }
+      ],
+      "team_b": "Steinbach Pistons",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "7/16/26",
+      "date": "2026-07-16",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Daniel Helary D 2006",
+      "players_a": [
+        {
+          "name": "Daniel Helary",
+          "pos": "D",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Fort McMurray (AJHL)",
+      "sent_b": "PDF",
+      "players_b": []
+    },
+    {
+      "date_raw": "7/13/26",
+      "date": "2026-07-13",
+      "team_a": "Dauphin Kings",
+      "sent_a": "Matthew O'Sullivan F 2006",
+      "players_a": [
+        {
+          "name": "Matthew O'Sullivan",
+          "pos": "F",
+          "born": "2006"
+        }
+      ],
+      "team_b": "Northern Manitoba Blizzard",
+      "sent_b": "PDF & Future Considerations",
+      "players_b": []
+    }
+  ],
+  "summary": {
+    "Dauphin Kings": {
+      "transactions": 16,
+      "out": 13,
+      "in": 6
+    },
+    "Neepawa Titans": {
+      "transactions": 8,
+      "out": 4,
+      "in": 4
+    },
+    "Niverville Nighthawks": {
+      "transactions": 11,
+      "out": 6,
+      "in": 6
+    },
+    "Northern Manitoba Blizzard": {
+      "transactions": 18,
+      "out": 10,
+      "in": 12
+    },
+    "Portage Terriers": {
+      "transactions": 6,
+      "out": 3,
+      "in": 4
+    },
+    "Selkirk Steelers": {
+      "transactions": 9,
+      "out": 9,
+      "in": 4
+    },
+    "Steinbach Pistons": {
+      "transactions": 8,
+      "out": 2,
+      "in": 7
+    },
+    "Swan Valley Stampeders": {
+      "transactions": 10,
+      "out": 5,
+      "in": 5
+    },
+    "Virden Oil Capitals": {
+      "transactions": 3,
+      "out": 2,
+      "in": 1
+    },
+    "Waywayseecappo Wolverines": {
+      "transactions": 10,
+      "out": 7,
+      "in": 6
+    },
+    "Winkler Flyers": {
+      "transactions": 10,
+      "out": 10,
+      "in": 3
+    },
+    "Winnipeg Blues": {
+      "transactions": 18,
+      "out": 9,
+      "in": 11
+    },
+    "Winnipeg Monarchs": {
+      "transactions": 9,
+      "out": 6,
+      "in": 5
+    }
+  }
+}

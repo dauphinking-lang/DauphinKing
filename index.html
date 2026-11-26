@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dauphin Kings Transaction Tracker · 2026-27 MJHL</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #ffffff; --ink: #1c1d22; --muted: #6b6e78; --line: #e4e2dc;
+    --kings: #5b2a86; --kings-soft: #efe7f6;
+    --high: #2f8f5b; --mid: #c98a1b; --low: #c2453d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141418; --card:#1d1d23; --ink:#ececf1; --muted:#9a9ca8; --line:#2d2d36; --kings:#8f5cc4; --kings-soft:#2a2236; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--kings); color:#fff; padding:26px 20px 0; position:sticky; top:0; z-index:5; }
+  .wrap { max-width:1000px; margin:0 auto; }
+  h1 { margin:0; font-size:25px; letter-spacing:-.01em; }
+  header p { margin:4px 0 0; opacity:.85; font-size:14px; }
+  .status { font-size:12px; opacity:.8; }
+
+  nav { display:flex; gap:2px; margin-top:16px; overflow-x:auto; scrollbar-width:none; }
+  nav::-webkit-scrollbar { display:none; }
+  nav a { color:#fff; opacity:.75; text-decoration:none; padding:10px 16px; border-radius:10px 10px 0 0; font-weight:600; font-size:14px; white-space:nowrap; }
+  nav a:hover { opacity:1; background:rgba(255,255,255,.08); }
+  nav a.on { opacity:1; background:var(--bg); color:var(--kings); }
+
+  main { padding:22px 20px; }
+  .panel { display:none; }
+  .panel.on { display:block; animation:fade .18s ease; }
+  @keyframes fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
+
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+  .tile { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .tile .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .tile .v { font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:20px; }
+  h2 { margin:0 0 4px; font-size:18px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 14px; }
+  .scroll { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { text-align:left; color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; padding:8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  td { padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  tr.focus td { background:var(--kings-soft); font-weight:600; }
+  tr.click { cursor:pointer; } tr.click:hover td { background:var(--kings-soft); }
+  .out { color:var(--low); } .in { color:var(--high); } .muted { color:var(--muted); }
+  .tag { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:99px; margin-left:6px; vertical-align:1px; }
+  .tag.pending { background:#fff1d6; color:#8a5a00; border:1px solid #f0d08a; }
+  .bar { height:8px; border-radius:4px; background:var(--kings); opacity:.75; min-width:2px; }
+  .morale { white-space:nowrap; font-weight:600; }
+  .morale .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
+  .m-high { color:var(--high); } .m-high .dot { background:var(--high); }
+  .m-mid { color:var(--mid); } .m-mid .dot { background:var(--mid); }
+  .m-low { color:var(--low); } .m-low .dot { background:var(--low); }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:13px; margin-top:12px; }
+  .filters { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
+  .filters button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:99px; padding:4px 12px; font:inherit; font-size:13px; cursor:pointer; }
+  .filters button.on { background:var(--kings); border-color:var(--kings); color:#fff; }
+  select { font:inherit; padding:7px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); min-width:260px; }
+  .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .tier { border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; }
+  .tier b { display:block; margin-bottom:4px; }
+  .note { background:var(--kings-soft); border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:14px; }
+  .about p, .about li { max-width:70ch; }
+  footer { color:var(--muted); font-size:12px; text-align:center; padding:0 20px 30px; }
+  a { color:inherit; }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>👑 Dauphin Kings Transaction Tracker</h1>
+  <p>2026-27 MJHL season · <span class="status" id="status">Loading…</span></p>
+  <nav id="tabs">
+    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#kings" data-tab="kings">Kings Trades</a>
+    <a href="#league" data-tab="league">League &amp; Morale</a>
+    <a href="#teams" data-tab="teams">Team Explorer</a>
+    <a href="#about" data-tab="about">About</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+  <!-- OVERVIEW -->
+  <div class="panel" id="p-overview">
+    <div class="tiles" id="tiles"></div>
+    <div class="grid2">
+      <section>
+        <h2>Latest Kings moves</h2>
+        <p class="sub">The five most recent transactions.</p>
+        <div class="scroll"><table><tbody id="latest"></tbody></table></div>
+        <p class="sub" style="margin:10px 0 0"><a href="#kings">See all Kings trades →</a></p>
+      </section>
+      <section>
+        <h2>Morale snapshot</h2>
+        <p class="sub">Where every MJHL team sits, by trade volume.</p>
+        <div class="tiers" id="tiers"></div>
+        <p class="sub" style="margin:10px 0 0"><a href="#league">Full league table →</a></p>
+      </section>
+    </div>
+  </div>
+
+  <!-- KINGS TRADES -->
+  <div class="panel" id="p-kings">
+    <section>
+      <h2>Dauphin Kings transactions</h2>
+      <p class="sub">Newest first. PDF = Player Development Fee.</p>
+      <div class="filters" id="filters">
+        <button data-f="all" class="on">All</button>
+        <button data-f="out">Players out</button>
+        <button data-f="in">Players in</button>
+        <button data-f="pending">Pending</button>
+      </div>
+      <div class="scroll"><table>
+        <thead><tr><th>Date</th><th>Kings send</th><th>Kings get</th><th>Other team</th></tr></thead>
+        <tbody id="kingsBody"></tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <!-- LEAGUE -->
+  <div class="panel" id="p-league">
+    <section>
+      <h2>League comparison &amp; team morale</h2>
+      <p class="sub">Sorted by number of transactions. Click a team to see its trades.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Team</th><th>Morale</th><th class="num">Transactions</th><th style="width:22%"></th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead>
+        <tbody id="leagueBody"></tbody>
+      </table></div>
+      <div class="legend">
+        <span class="morale m-high"><span class="dot"></span>High: stable roster</span>
+        <span class="morale m-mid"><span class="dot"></span>Mid: average turnover</span>
+        <span class="morale m-low"><span class="dot"></span>Low: heavy turnover</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- TEAM EXPLORER -->
+  <div class="panel" id="p-teams">
+    <section>
+      <h2>Team Explorer</h2>
+      <p class="sub">Pick any MJHL team to see its transactions.</p>
+      <div class="filters"><select id="teamPick"></select></div>
+      <div class="tiles" id="teamTiles"></div>
+      <div id="teamNote"></div>
+      <div class="scroll"><table>
+        <thead><tr><th>Date</th><th>Sends</th><th>Gets</th><th>Other team</th></tr></thead>
+        <tbody id="teamBody"></tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="panel about" id="p-about">
+    <section>
+      <h2>About this tracker</h2>
+      <p>Transactions come from the <a id="srclink" href="https://www.mjhlhockey.ca/2026-27-transactions">MJHL 2026-27 transactions page</a>. A GitHub Action re-reads that page every 3 hours and updates this site's data. An open page checks for new data every 10 minutes.</p>
+      <h2 style="margin-top:18px">How morale is rated</h2>
+      <ul>
+        <li>Teams are ranked by total transactions.</li>
+        <li>The busiest third of the league gets <span class="morale m-low"><span class="dot"></span>Low</span>, the middle third <span class="morale m-mid"><span class="dot"></span>Mid</span>, and the quietest third <span class="morale m-high"><span class="dot"></span>High</span>. Tied teams share a tier.</li>
+        <li>It's a fun indicator based only on trade volume, not a real measure of the dressing room.</li>
+      </ul>
+      <h2 style="margin-top:18px">Pending trades</h2>
+      <p>Trades are flagged pending by hand in <code>overrides.json</code>. Pending players right now: <span id="pendList"></span>.</p>
+      <h2 style="margin-top:18px">Reading the data</h2>
+      <p>On the MJHL page, each row lists a team and the players that team sends, followed by the other team and what it sends back. "PDF" and "Future Considerations" aren't counted as players. The source page has occasional typos and duplicate rows, so totals can be off by one or two.</p>
+    </section>
+  </div>
+</main>
+
+<footer>Data: MJHL 2026-27 transactions · updated automatically</footer>
+
+<script>
+const REFRESH_MS = 10 * 60 * 1000;
+const TABS = ["overview", "kings", "league", "teams", "about"];
+const LABEL = { high: "High", mid: "Mid", low: "Low" };
+let DATA = null, filter = "all", pickedTeam = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtDate = (iso, raw) => iso
+  ? new Date(iso + "T12:00:00").toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric" })
+  : esc(raw);
+const playerList = (list, raw) => list.length
+  ? list.map(p => `${esc(p.name)} <span class="muted">${p.pos} '${p.born.slice(2)}</span>`).join("<br>")
+  : `<span class="muted">${esc(raw)}</span>`;
+const moraleBadge = m => `<span class="morale m-${m}"><span class="dot"></span>${LABEL[m]}</span>`;
+
+/* ---------- tabs ---------- */
+function showTab() {
+  const t = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "overview";
+  TABS.forEach(x => {
+    $("p-" + x).classList.toggle("on", x === t);
+    document.querySelector(`nav a[data-tab="${x}"]`).classList.toggle("on", x === t);
+  });
+  window.scrollTo({ top: 0 });
+}
+window.addEventListener("hashchange", showTab);
+
+/* ---------- data helpers ---------- */
+function teamRows(team) {
+  const pend = new Set(DATA.pending_players || []);
+  return DATA.transactions
+    .filter(r => r.team_a === team || r.team_b === team)
+    .map(r => {
+      const me = r.team_a === team ? "a" : "b", them = me === "a" ? "b" : "a";
+      return {
+        date: fmtDate(r.date, r.date_raw),
+        send: r["players_" + me], sendRaw: r["sent_" + me],
+        get: r["players_" + them], getRaw: r["sent_" + them],
+        other: r["team_" + them],
+        pending: [...r.players_a, ...r.players_b].some(p => pend.has(p.name)),
+      };
+    });
+}
+
+function ranked() {
+  return Object.entries(DATA.summary)
+    .sort((a, b) => b[1].transactions - a[1].transactions || a[0].localeCompare(b[0]));
+}
+
+function moraleMap() {
+  const t = ranked(), n = t.length, map = {};
+  const cutLow = t[Math.floor(n / 3) - 1][1].transactions;
+  const cutMid = t[Math.floor(2 * n / 3) - 1][1].transactions;
+  for (const [team, s] of t) map[team] = s.transactions >= cutLow ? "low" : s.transactions >= cutMid ? "mid" : "high";
+  return map;
+}
+
+const txRow = x => `<tr>
+  <td style="white-space:nowrap">${x.date}${x.pending ? '<span class="tag pending">PENDING</span>' : ""}</td>
+  <td class="${x.send.length ? "out" : ""}">${playerList(x.send, x.sendRaw)}</td>
+  <td class="${x.get.length ? "in" : ""}">${playerList(x.get, x.getRaw)}</td>
+  <td>${esc(x.other)}</td></tr>`;
+
+function tilesHTML(team, morale, R) {
+  const s = DATA.summary[team] || { transactions: 0, out: 0, in: 0 };
+  const rank = R.findIndex(([t]) => t === team) + 1;
+  return [
+    ["Transactions", s.transactions],
+    ["League rank", rank ? `${rank} / ${R.length}` : "–"],
+    ["Players out", `<span class="out">${s.out}</span>`],
+    ["Players in", `<span class="in">${s.in}</span>`],
+    ["Morale", morale[team] ? moraleBadge(morale[team]) : "–"],
+  ].map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+
+/* ---------- render ---------- */
+function render() {
+  const focus = DATA.focus_team, morale = moraleMap(), R = ranked();
+  const kings = teamRows(focus);
+
+  // Overview
+  $("tiles").innerHTML = tilesHTML(focus, morale, R);
+  $("latest").innerHTML = kings.slice(0, 5).map(x => `<tr>
+    <td style="white-space:nowrap" class="muted">${x.date}</td>
+    <td>${x.send.length ? `<span class="out">Out:</span> ${x.send.map(p => esc(p.name)).join(", ")}` : ""}
+        ${x.send.length && x.get.length ? "<br>" : ""}
+        ${x.get.length ? `<span class="in">In:</span> ${x.get.map(p => esc(p.name)).join(", ")}` : ""}
+        ${x.pending ? '<span class="tag pending">PENDING</span>' : ""}
+        <div class="muted" style="font-size:12px">${esc(x.other)}</div></td></tr>`).join("");
+  $("tiers").innerHTML = ["low", "mid", "high"].map(m => `<div class="tier">
+    <b>${moraleBadge(m)}</b>${R.filter(([t]) => morale[t] === m)
+      .map(([t]) => t === focus ? `<strong>${esc(t)}</strong>` : esc(t)).join("<br>")}</div>`).join("");
+
+  // Kings trades
+  const shown = kings.filter(x => filter === "all" || (filter === "pending" && x.pending) ||
+    (filter === "out" && x.send.length) || (filter === "in" && x.get.length));
+  $("kingsBody").innerHTML = shown.length ? shown.map(txRow).join("")
+    : `<tr><td colspan="4" class="muted">No transactions match this filter.</td></tr>`;
+
+  // League
+  const max = Math.max(...R.map(([, s]) => s.transactions));
+  $("leagueBody").innerHTML = R.map(([t, s]) => {
+    const net = s.in - s.out;
+    return `<tr class="click ${t === focus ? "focus" : ""}" data-team="${esc(t)}">
+      <td>${esc(t)}</td><td>${moraleBadge(morale[t])}</td>
+      <td class="num">${s.transactions}</td>
+      <td><div class="bar" style="width:${(s.transactions / max * 100).toFixed(1)}%"></div></td>
+      <td class="num">${s.out}</td><td class="num">${s.in}</td>
+      <td class="num ${net < 0 ? "out" : net > 0 ? "in" : ""}">${net > 0 ? "+" : ""}${net}</td></tr>`;
+  }).join("");
+
+  // Team explorer
+  const pick = $("teamPick");
+  if (!pick.options.length) {
+    pick.innerHTML = Object.keys(DATA.summary).sort().map(t => `<option>${esc(t)}</option>`).join("");
+  }
+  pickedTeam = pickedTeam || focus;
+  pick.value = pickedTeam;
+  renderTeam(morale, R);
+
+  // About + status
+  $("pendList").textContent = (DATA.pending_players || []).join(", ") || "none";
+  $("status").textContent = `updated ${new Date(DATA.updated).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}` +
+    (DATA.mode === "seed" ? " · starter data until the first automatic refresh" : "");
+}
+
+function renderTeam(morale = moraleMap(), R = ranked()) {
+  const rows = teamRows(pickedTeam);
+  $("teamTiles").innerHTML = tilesHTML(pickedTeam, morale, R);
+  const missing = DATA.mode === "seed" && pickedTeam !== DATA.focus_team;
+  $("teamNote").innerHTML = missing
+    ? `<div class="note">Full trade lists for other teams appear after the first automatic refresh. The totals above are already current.</div>` : "";
+  $("teamBody").innerHTML = rows.length ? rows.map(txRow).join("")
+    : `<tr><td colspan="4" class="muted">${missing ? "Waiting for first refresh." : "No transactions yet."}</td></tr>`;
+}
+
+/* ---------- events ---------- */
+$("filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("on", x === b));
+  if (DATA) render();
+});
+$("leagueBody").addEventListener("click", e => {
+  const tr = e.target.closest("tr[data-team]"); if (!tr) return;
+  pickedTeam = tr.dataset.team; $("teamPick").value = pickedTeam; renderTeam();
+  location.hash = "teams";
+});
+$("teamPick").addEventListener("change", e => { pickedTeam = e.target.value; renderTeam(); });
+
+async function load() {
+  try {
+    const res = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error(res.status);
+    DATA = await res.json();
+    render();
+  } catch (e) {
+    $("status").textContent = "couldn't load data.json (" + e.message + ")";
+  }
+}
+
+showTab();
+load();
+setInterval(load, REFRESH_MS);
+</script>
+</body>
+</html>
